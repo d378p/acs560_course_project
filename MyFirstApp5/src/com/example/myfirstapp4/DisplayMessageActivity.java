@@ -1,5 +1,6 @@
 package com.example.myfirstapp4;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,8 +11,22 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
@@ -19,6 +34,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.view.Menu;
@@ -27,6 +43,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class DisplayMessageActivity extends ActionBarActivity {
+	
+	//field
+	String message = null;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +72,27 @@ public class DisplayMessageActivity extends ActionBarActivity {
 //               .add(R.id.container, new PlaceholderFragment()).commit();
 //       }
        
-    // Get the message from the intent
+		 /////////////////////////////////////
+		 // Get the message from the intent
+		 ////////////////////////////////////
+		 
        Intent intent = getIntent();
        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
+       this.message = message;
        // Create the text view
        TextView textView = new TextView(this);
        textView.setTextSize(40);
        //sets the message string to text intered into the view
-       textView.setText(message);
+       textView.setText(message);       
+       
 
        // Set the text view as the activity layout
        setContentView(textView); 
+       
+       /////////////////////////////////////////////       
+       // Write and read file with content
+       //////////////////////////////////////////////
+       
        
        //create file
        //File file = new File(myApp.getFilesDir(), filename);
@@ -72,6 +101,7 @@ public class DisplayMessageActivity extends ActionBarActivity {
        //String string = "Hello world!";
        FileOutputStream outputStream;
 
+       //write file
        try {
          outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
          outputStream.write(message.getBytes());//was string
@@ -80,7 +110,7 @@ public class DisplayMessageActivity extends ActionBarActivity {
          e.printStackTrace();
        }//end try catch 
        
-       //try and read file
+       //read file
        StringBuffer datax = new StringBuffer("");
        try {
            FileInputStream fIn = openFileInput ( fileName ) ;
@@ -103,15 +133,24 @@ public class DisplayMessageActivity extends ActionBarActivity {
 
        // Set the text view as the activity layout
        setContentView(textView); 
+      
        
+     
        /////////////////////////////////////////////       
-
+       // DB create table and store content
+       //////////////////////////////////////////////
        
        //web example
        //http://www.techrepublic.com/blog/software-engineer/browse-sqlite-data-on-the-android-emulator/
-       final String SAMPLE_DB_NAME = "TrekBook";
-   	final String SAMPLE_TABLE_NAME = "Info";
-       SQLiteDatabase sampleDB =  this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
+     
+     final String SAMPLE_DB_NAME = "TrekBook";
+   	 final String SAMPLE_TABLE_NAME = "Info";
+   	
+      SQLiteDatabase sampleDB =  this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
+       
+      //remove existing table
+      //sampleDB.execSQL("DROP TABLE IF EXISTS "+SAMPLE_TABLE_NAME+" ;", null);
+       
 		sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " +
                SAMPLE_TABLE_NAME +
                " (LastName VARCHAR, FirstName VARCHAR," +
@@ -119,26 +158,21 @@ public class DisplayMessageActivity extends ActionBarActivity {
        sampleDB.execSQL("INSERT INTO " +
                SAMPLE_TABLE_NAME +
                " Values ('a','b', '"+message+" ');");
+       
        sampleDB.close();
-       Toast.makeText(this, "DB Created!", Toast.LENGTH_LONG).show();  
+       
+       Toast.makeText(this, "DB Created!", Toast.LENGTH_LONG).show();         
        
        
+       /////////////////////////////////////
+       // Open DB and read stored content
+       /////////////////////////////////////
        
-       
-       /////////////////////
-       // get data
-       SQLiteDatabase sampleDB2 =  this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-       
+       SQLiteDatabase sampleDB2 =  this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);     
      
-     //remove existing table
-     //sampleDB2.rawQuery("DROP TABLE IF EXISTS "+SAMPLE_TABLE_NAME+" ;", null);
      Cursor result=sampleDB2.rawQuery("SELECT LastName, FirstName, Rank FROM "+SAMPLE_TABLE_NAME+" ;",null);
      
-     /*
-      * try to turn this off its is a state issue
-      */
-     //sampleDB2.close();
-     
+       
      // Iterate over cursor to build string
      String LastNameDB = null;
      String FirstNameDB = null;
@@ -158,12 +192,16 @@ public class DisplayMessageActivity extends ActionBarActivity {
      
      result.close();
      
+     sampleDB2.close();
+     
      textView.setText("DB values = \n"+total);
 
      // Set the text view as the activity layout
      setContentView(textView); 
      
      
+     /////////////////////////////////////////////////////////////
+     // Read server file with web browser
      /////////////////////////////////////////////////////////////
      
 //   //works fine
@@ -172,182 +210,21 @@ public class DisplayMessageActivity extends ActionBarActivity {
 //   Uri theUri = Uri.parse("http://10.0.2.2/hello.php");//works
 //   Intent LaunchBrowserIntent = new Intent(Intent.ACTION_VIEW,theUri);
 //   startActivity(LaunchBrowserIntent);
-   
-   
      
- //---------------------------------------------------------------------------
-       /*
-        * does not work.....crap!!!
-        */
-       String inputLine ="";
-       
-       try {
-		//URL u = new URL("www.google.com");//works does not like the http
-		URL u = new URL("http://engr.ipfw.edu/~zchen");//works does not like the http
-    	//URL u = new URL("http://10.0.2.2/hello.php");//does not work
-    	//URL u = new URL("10.0.2.2/hello.php");//works does not like the  http
-		URLConnection connection = u.openConnection();		
-		InputStream in = connection.getInputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		//after call to getInputStream
-		HttpURLConnection httpConnection = (HttpURLConnection)connection;
-		int code = httpConnection.getResponseCode();
-		boolean done = false;
-		while(!done){
-			String input = reader.readLine();			
-			if (input==null){
-				done=true;
-			}else{
-				//inputLine = inputLine+input+"\n";
-				
-			}
-			
-			textView.setText("Code values = \n"+code);
-			
-		}
-		
-	} catch (MalformedURLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-       
-       
-    
-       
-//---------------------------------------------------------------- 
+     
+     //---------------------------------------------------------------------------
+     
+     /////////////////////////////////////////////////////////////
+     // Use HTTP Post to send content to server and store content
+     // into mySQL using Post2.php script
+     /////////////////////////////////////////////////////////////
+     
+     //new HttpGetDemo().execute(textView); 
+     
+     new HttpPostDemo().execute(textView);  
+     
+     
 
-//       
-//       URL url;
-//	try {
-//		url = new URL("http://10.0.2.2/hello.php");
-//	
-//       HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-//       httpCon.setDoOutput(true);
-//       httpCon.setRequestMethod("PUT");
-//       OutputStreamWriter out = new OutputStreamWriter(
-//           httpCon.getOutputStream());
-//       out.write("Resource content");
-//       out.close();
-//       httpCon.getInputStream();
-//       
-//	} catch (MalformedURLException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	} catch (ProtocolException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	} catch (IOException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-       
-       
-       
-//       String url = "http://10.0.2.2/hello.php";
-//       
-//       String USER_AGENT = "Mozilla/5.0";
-//       
-//       try {
-//       
-//		URL obj;
-//		
-//		obj = new URL(url);
-//		
-//		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//		// optional default is GET
-//		con.setRequestMethod("GET");
-//
-//		//add request header
-//		con.setRequestProperty("User-Agent", USER_AGENT);
-//
-////		int responseCode = con.getResponseCode();
-////		System.out.println("\nSending 'GET' request to URL : " + url);
-////		System.out.println("Response Code : " + responseCode);
-//
-//		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//		
-////		String inputLine;
-////		StringBuffer response = new StringBuffer();
-////
-////		while ((inputLine = in.readLine()) != null) {
-////			response.append(inputLine);
-////		}
-////		in.close();
-////
-////		//print result
-////		System.out.println(response.toString());
-////       
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//       
-       
-       
-//       HttpURLConnection con = null;
-//       URL url;
-//       
-//	try {
-//		
-//		url = new URL("http://10.0.2.2/hello.php");
-//		con  = (HttpURLConnection) url.openConnection();
-//		con.setReadTimeout(10000/*milliseconds*/);
-//		con.setConnectTimeout(15000/*milliseconds*/);
-//		con.setRequestMethod("GET");
-//		con.setDoInput(true);		
-//		con.connect();
-//		
-//		if(Thread.interrupted()) throw new InterruptedException();
-//		
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
-//		String payload = reader.readLine();
-//		reader.close();
-//		
-//	} catch (MalformedURLException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	} catch (IOException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	} catch (InterruptedException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-       
-       
-       
-     
-     
-//     //test client code from HW7 ***** does not work as is    
-//     URL oracle;
-//	try {
-//		oracle = new URL("http://10.0.2.2/hello.php");
-//		URLConnection myConnection;
-//		myConnection = oracle.openConnection();
-//		BufferedReader in;
-//		in = new BufferedReader(new InputStreamReader(
-//				myConnection.getInputStream()));
-//		String inputLine;
-//		while ((inputLine = in.readLine()) != null) {
-//			//System.out.println(inputLine);
-//			textView.setText("php values = \n"+inputLine);
-//		}
-//		in.close();
-//	} catch (MalformedURLException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();			
-//	}//end try catch blocks     
-     
 		
 	}
 
@@ -370,5 +247,69 @@ public class DisplayMessageActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	
+	/////////////////////////////////////////////////////////////
+	// Http class
+	/////////////////////////////////////////////////////////////
+	
+	public class HttpPostDemo extends AsyncTask<TextView, Void, String> 
+	{
+		TextView textView;
+		
+		@Override
+		protected String doInBackground(TextView... params) 	
+		{
+			this.textView = params[0];
+			BufferedReader inBuffer = null;
+			String url = "http://10.0.2.2/post2.php";
+			String result = "fail";
+			try {
+				HttpClient httpClient = new DefaultHttpClient();
+				HttpPost request = new HttpPost(url);
+				List<NameValuePair> postParameters = 
+					new ArrayList<NameValuePair>();
+				postParameters.add(new BasicNameValuePair("name", message));
+				//postParameters.add(new BasicNameValuePair("operandb", "6"));
+				//postParameters.add(new BasicNameValuePair("answer", "11"));
+				UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(
+						postParameters);
+
+				request.setEntity(formEntity);
+				HttpResponse httpResponse = httpClient.execute(request);
+				inBuffer = new BufferedReader(
+					new InputStreamReader(
+						httpResponse.getEntity().getContent()));
+
+				StringBuffer stringBuffer = new StringBuffer("");
+				String line = "";
+				String newLine = System.getProperty("line.separator");
+				while ((line = inBuffer.readLine()) != null) {
+					stringBuffer.append(line + newLine);
+				}
+				inBuffer.close();
+
+				result = stringBuffer.toString();
+				
+			} catch(Exception e) {
+				// Do something about exceptions
+				result = e.getMessage();
+			} finally {
+				if (inBuffer != null) {
+					try {
+						inBuffer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			return result;
+		}
+		
+		protected void onPostExecute(String page)
+		{    	
+	    	textView.setText(page);      	
+		}
+		
+	}
 		
 }
