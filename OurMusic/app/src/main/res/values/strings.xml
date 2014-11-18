@@ -8,5 +8,11 @@
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="friend_title">Friends</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="email">Email</string>
+    <string name="confirm_email">Confirm Email</string>
+    <string name="create_user">Create User</string>
+    <string name="create_account">If you don\'t have an account you can create one here</string>
+    <string name="create_account_btn">Create Account</string>
 
 </resources>

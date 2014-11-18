@@ -2,6 +2,8 @@ package com.our_music.gui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +12,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.Parser;
+
+import org.json.JSONObject;
 
 
 /**
@@ -18,12 +23,16 @@ import com.example.jared.ourmusic.R;
  */
 public class LoginActivity extends Activity{
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private EditText username;
     private EditText password;
     private TextView loginText;
     private TextView passwordText;
     private Button loginButton;
+    private Intent startConnection;
+    public Parser connector;
+    private final String LOGIN_VALID = "TRUE";
+    private final String LOGIN_INVALID = "FALSE";
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -36,9 +45,18 @@ public class LoginActivity extends Activity{
         loginButton = (Button)findViewById(R.id.loginButton);
     }
 
-    public void login(View v) {
+    public void login(View v) throws Exception{
+        String user = String.valueOf(username.getText());
+        String pass = String.valueOf(password.getText());
+        JSONObject login = new JSONObject();
+        login.put("type", "LOGIN");
+        login.put("username", user);
+        login.put("password", pass);
+        AsyncTask parser = new Parser().execute(login);
+        String result = (String)parser.get();
+
         //Temp code
-        if(username.getText().equals("Jared") && password.getText().equals("aaaa")){
+        if(result.equals(LOGIN_VALID)){
             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
             Intent homeIntent = new Intent(this, HomeActivity.class);
             startActivity(homeIntent);
@@ -51,6 +69,11 @@ public class LoginActivity extends Activity{
         //Call to parser with username & password
         //if match then create home activity and launch
         //else toast prompt & error that credentials are incorrect
+    }
+
+    public void createUser(View v) {
+        Intent createUser = new Intent(this, CreateUserActivity.class);
+        startActivity(createUser);
     }
 
 
