@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -54,8 +55,7 @@ public class LoginActivity extends Activity{
         login.put("password", pass);
         AsyncTask parser = new Parser().execute(login);
         String result = (String)parser.get();
-
-        //Temp code
+        Log.d(TAG, result);
         if(result.equals(LOGIN_VALID)){
             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
             Intent homeIntent = new Intent(this, HomeActivity.class);
@@ -64,11 +64,6 @@ public class LoginActivity extends Activity{
         else {
             Toast.makeText(getApplicationContext(), "FAILED", Toast.LENGTH_LONG).show();
         }
-
-        //TODO
-        //Call to parser with username & password
-        //if match then create home activity and launch
-        //else toast prompt & error that credentials are incorrect
     }
 
     public void createUser(View v) {

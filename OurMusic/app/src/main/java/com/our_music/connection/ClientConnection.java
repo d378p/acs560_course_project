@@ -2,6 +2,8 @@ package com.our_music.connection;
 
 import android.util.Log;
 
+import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,7 +27,7 @@ import java.net.Socket;
 public class ClientConnection {
     private static ClientConnection instance = null;
     private static final String TAG = ClientConnection.class.getSimpleName();
-    private final String SERVER_ADDRESS = "10.0.0.2";
+    private final String SERVER_ADDRESS = "10.0.2.2";
     private final int PORT = 8080;
     private final int MAX_RECONNECTS = 15;
     private final int RECONNECT_MULTIPLIER = 500;
@@ -37,7 +39,9 @@ public class ClientConnection {
     private BufferedReader reader;
     protected boolean connectionActive = false;
 
-    protected ClientConnection(){}
+    protected ClientConnection(){
+        setupConnection();
+    }
 
     public static ClientConnection getInstance() {
         if(instance == null) {
@@ -54,9 +58,8 @@ public class ClientConnection {
                 outStream = new DataOutputStream(socket.getOutputStream());
                 inStream = new DataInputStream(socket.getInputStream());
                 //pw = new PrintWriter(outStream);
-                pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
-                //reader = new BufferedReader(new InputStreamReader(inStream));
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                pw = new PrintWriter(socket.getOutputStream(), true);
+                reader = new BufferedReader(new InputStreamReader(inStream));
                 reconnectAttempts = 0;
                 connectionActive = true;
             }
@@ -96,20 +99,21 @@ public class ClientConnection {
     }
 
     protected JSONObject requestData(String parsedJson) {
+        JSONObject returnObject = null;
         try{
             pw.println(parsedJson);
             pw.flush();
-            return new JSONObject(reader.readLine());
+            returnObject = new JSONObject(reader.readLine());
         }
         catch (IOException e){
             Log.i(TAG, e.getMessage());
+            e.printStackTrace();
         }
         catch (JSONException el) {
             Log.d(TAG, el.getMessage());
             Log.d(TAG, "Malformed JSON String");
+            el.printStackTrace();
         }
-        finally {
-            return null;
-        }
+        return returnObject;
     }
 }
