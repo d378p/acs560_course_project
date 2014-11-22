@@ -1,0 +1,71 @@
+"type" can be REQUEST, RESPONSE, or INIT
+
+REQUEST: (Only sent from client)
+	Sent: 
+		"subject", may include: "queryType", "customParameters"
+		
+		
+RESPONSE: (Only sent from server)
+	Sent:
+		"subject", may include: "queryResult"
+		
+INIT: (Only sent from client)
+	Sent:
+		None, just the INIT piece
+	Received:
+		####Not sure yet, needs to contain all the info to send to the database for User_Table and maybe others####
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"subject" can be LOGIN, NEW_USER, QUERY, DB_UPDATE, ADD_FRIEND, ADD_SONG, GET_FRIENDS, GET_SONGS		
+
+LOGIN:
+	Sent:
+		"username", "password"
+	Received:
+		"validity"
+
+NEW_USER:
+	Sent:
+		"username", "password", "email"
+	Received:
+		"validity"
+		
+ADD_FRIEND:
+	Sent:
+		"friendUsername", "friendFirst", "friendLast"
+	Received:
+		"verifyAdded" (We'll send a db update after this to update local db for user)
+		
+ADD_SONG:
+	Sent:
+		"songName", "albumName", "artistName"
+	Received:
+		"verifyAdded" (We'll send a db update after this to update local db for user)
+		
+GET_FRIENDS:
+	Sent:
+		None, just the GET_FRIENDS piece
+	Received:
+		"friends" array of "friendFirst, friendLast, friendUsername"
+	
+GET_SONGS:
+	Sent:
+		None, just the GET_SONGS piece
+	Received:
+		"songs" array of "songName, albumName, artistName"
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"queryType" can be TOP_TEN, TOP_THREE_FRIENDS, CUSTOM_QUERY
+		
+TOP_TEN:
+	Sent:
+		None, just the TOP_TEN piece
+	Received:
+		"topTenSongs" array of  "songName, albumName, artistName"
+		
+TOP_THREE_FRIENDS
+	Sent:
+		None, just the TOP_THREE_FRIENDS piece
+	Received:
+		topSongsThreeFriends" array of "songName, albumName, artistName"
+		
