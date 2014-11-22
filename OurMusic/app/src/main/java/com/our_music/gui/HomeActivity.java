@@ -8,6 +8,11 @@ import android.widget.TextView;
 
 import com.example.jared.ourmusic.R;
 
+/**
+ * Created by Jared at some point in time
+ *
+ * Activity for main page of app.  Displays a current song list and friend list of the user.
+ */
 
 public class HomeActivity extends Activity {
 

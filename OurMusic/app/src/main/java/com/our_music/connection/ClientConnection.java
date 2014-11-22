@@ -98,6 +98,11 @@ public class ClientConnection {
         }
     }
 
+    protected void resetConnection() {
+        closeConnection();
+        setupConnection();
+    }
+
     protected JSONObject requestData(String parsedJson) {
         JSONObject returnObject = null;
         try{

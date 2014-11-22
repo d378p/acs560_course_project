@@ -30,8 +30,6 @@ public class LoginActivity extends Activity{
     private TextView loginText;
     private TextView passwordText;
     private Button loginButton;
-    private Intent startConnection;
-    public Parser connector;
     private final String LOGIN_VALID = "TRUE";
     private final String LOGIN_INVALID = "FALSE";
 
@@ -60,8 +58,7 @@ public class LoginActivity extends Activity{
             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
             Intent homeIntent = new Intent(this, HomeActivity.class);
             startActivity(homeIntent);
-        }
-        else {
+        } else {
             Toast.makeText(getApplicationContext(), "FAILED", Toast.LENGTH_LONG).show();
         }
     }

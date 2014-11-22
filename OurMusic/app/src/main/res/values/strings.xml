@@ -14,5 +14,10 @@
     <string name="create_user">Create User</string>
     <string name="create_account">If you don\'t have an account you can create one here</string>
     <string name="create_account_btn">Create Account</string>
+    <string name="search_header">Search</string>
+    <string name="top_ten">Top 10</string>
+    <string name="top_three">Top 3 Songs from Friends</string>
+    <string name="custom_query">Custom Query</string>
+    <string name="search_button">Search</string>
 
 </resources>
