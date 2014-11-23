@@ -17,31 +17,31 @@ import java.util.Map;
  * on the ClientConnection singleton to communicate with the server.
  */
 public class Parser extends AsyncTask<JSONObject, Integer, String>{
-    public enum MessageType {
-        REQUEST, RESPONSE, INIT, LOGIN, QUERY, DB_UPDATE, ADD_FRIEND, ADD_SONG, NEW_USER,
-        GET_SONGS, GET_FRIENDS, TOP_TEN, TOP_THREE_FRIENDS, CUSTOM_QUERY;
-
-        private static final Map<String, MessageType> enumMap;
-        static {
-            Map<String, MessageType> map = new HashMap<String, MessageType>();
-            for(MessageType el: MessageType.values()) {
-                map.put(el.toString(), el);
-            }
-            enumMap = Collections.unmodifiableMap(map);
-        }
-
-        public static MessageType getType(String type){
-            MessageType typeOfMessage = null;
-            try{
-                typeOfMessage = enumMap.get(type);
-            }
-            catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-                e.printStackTrace();
-            }
-            return typeOfMessage;
-        }
-    }
+//    public enum MessageType {
+//        REQUEST, RESPONSE, INIT, LOGIN, QUERY, DB_UPDATE, ADD_FRIEND, ADD_SONG, NEW_USER,
+//        GET_SONGS, GET_FRIENDS, TOP_TEN, TOP_THREE_FRIENDS, CUSTOM_QUERY;
+//
+//        private static final Map<String, MessageType> enumMap;
+//        static {
+//            Map<String, MessageType> map = new HashMap<String, MessageType>();
+//            for(MessageType el: MessageType.values()) {
+//                map.put(el.toString(), el);
+//            }
+//            enumMap = Collections.unmodifiableMap(map);
+//        }
+//
+//        public static MessageType getType(String type){
+//            MessageType typeOfMessage = null;
+//            try{
+//                typeOfMessage = enumMap.get(type);
+//            }
+//            catch (Exception e) {
+//                Log.d(TAG, e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return typeOfMessage;
+//        }
+//    }
     private static final String TAG = Parser.class.getSimpleName();
     private ClientConnection connection;
     private final String VALID = "TRUE";
@@ -52,7 +52,8 @@ public class Parser extends AsyncTask<JSONObject, Integer, String>{
         try {
             connection = ClientConnection.getInstance();
             JSONObject message = params[0];
-            MessageType requestType = MessageType.getType(message.getString("type"));
+            MessageDeclaration.MessageType requestType =
+                    MessageDeclaration.MessageType.getType(message.getString("type"));
             switch (requestType) {
                 case LOGIN:
                     String username = message.getString("username");
@@ -72,8 +73,8 @@ public class Parser extends AsyncTask<JSONObject, Integer, String>{
         String returnResponse = "";
         try{
             JSONObject sendMessage = new JSONObject();
-            sendMessage.put("type", MessageType.REQUEST);
-            sendMessage.put("messageType", MessageType.LOGIN);
+            sendMessage.put("type", MessageDeclaration.MessageType.REQUEST);
+            sendMessage.put("messageType", MessageDeclaration.MessageType.LOGIN);
             sendMessage.put("username", username);
             sendMessage.put("password", password);
             Log.d(TAG, "RIGHT BEFORE REQUEST DATA FROM SERVER");

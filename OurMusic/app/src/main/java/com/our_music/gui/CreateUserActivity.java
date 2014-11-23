@@ -10,7 +10,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.ParseInterface;
 import com.our_music.connection.Parser;
+import com.our_music.connection.UserParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,13 +56,14 @@ public class CreateUserActivity extends Activity{
         } else {
             JSONObject newUserRequest = new JSONObject();
             try {
-                newUserRequest.put("type", "NEW_USER");
+                newUserRequest.put("type", ParseInterface.MessageType.REQUEST.toString());
+                newUserRequest.put("subject", ParseInterface.MessageType.NEW_USER.toString());
                 newUserRequest.put("username", sendUsername);
                 newUserRequest.put("password", sendPassword);
-                newUserRequest.put("email", emailCopy);
-                AsyncTask parser = new Parser().execute(newUserRequest);
-                String result = (String) parser.get();
-                if (result.equals("VALID")) {
+                newUserRequest.put("email", sendEmail);
+                AsyncTask newUserParser = new UserParser().execute(newUserRequest);
+                boolean result = (Boolean) newUserParser.get();
+                if (result) {
                     //FIXME! Change to send back true to let us know server stored user information
                     Intent loginIntent = new Intent(this, LoginActivity.class);
                     startActivity(loginIntent);

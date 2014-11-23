@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.RadioButton;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.ParseInterface;
 
 /**
  * Created by Jared on 11/22/2014.
@@ -40,7 +41,7 @@ public class SearchActivity extends Activity{
     }
 
     private String getTopTen() {
-        //TODO
+        ParseInterface.MessageType messageSubject = ParseInterface.MessageType.QUERY;
         return "";
     }
 

@@ -13,7 +13,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.ParseInterface;
 import com.our_music.connection.Parser;
+import com.our_music.connection.UserParser;
 
 import org.json.JSONObject;
 
@@ -48,13 +50,14 @@ public class LoginActivity extends Activity{
         String user = String.valueOf(username.getText());
         String pass = String.valueOf(password.getText());
         JSONObject login = new JSONObject();
-        login.put("type", "LOGIN");
+        login.put("type", ParseInterface.MessageType.REQUEST.toString());
+        login.put("subject", ParseInterface.MessageType.LOGIN.toString());
         login.put("username", user);
         login.put("password", pass);
-        AsyncTask parser = new Parser().execute(login);
-        String result = (String)parser.get();
-        Log.d(TAG, result);
-        if(result.equals(LOGIN_VALID)){
+        AsyncTask loginParser = new UserParser().execute(login);
+        boolean result = (Boolean)loginParser.get();
+        //Log.d(TAG, result);
+        if(result){
             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
             Intent homeIntent = new Intent(this, HomeActivity.class);
             startActivity(homeIntent);
