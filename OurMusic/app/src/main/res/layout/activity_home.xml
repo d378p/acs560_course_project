@@ -40,5 +40,44 @@
         android:layout_marginTop="25dp"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_songs"
+        android:layout_below="@+id/friendsList"
+        android:text="@string/search_button"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="25dp"
+        android:onClick="goToSearch"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_song_button"
+        android:layout_toRightOf="@+id/search_songs"
+        android:layout_toEndOf="@id/search_songs"
+        android:layout_below="@id/friendsList"
+        android:layout_marginTop="15dp"
+        android:text="@string/add_song"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:onClick="launchAddSong"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_friend_button"
+        android:layout_toRightOf="@id/add_song_button"
+        android:layout_toEndOf="@id/add_song_button"
+        android:layout_below="@id/friendsList"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:text="@string/add_friend"
+        />
+
 
 </RelativeLayout>

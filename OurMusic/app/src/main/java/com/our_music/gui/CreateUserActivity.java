@@ -67,6 +67,7 @@ public class CreateUserActivity extends Activity{
                     //FIXME! Change to send back true to let us know server stored user information
                     Intent loginIntent = new Intent(this, LoginActivity.class);
                     startActivity(loginIntent);
+                    Toast.makeText(getApplicationContext(), "User Created.  Please log in", Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 Log.i(TAG, e.getMessage());

@@ -1,9 +1,11 @@
 package com.our_music.gui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.jared.ourmusic.R;
@@ -61,5 +63,15 @@ public class HomeActivity extends Activity {
         for(int i = 1; i <6; i++) {
             friendList.append(String.format("Fname Lname#%d\n", i));
         }
+    }
+
+    public void goToSearch(View v) {
+        Intent toSearch = new Intent(this, SearchActivity.class);
+        startActivity(toSearch);
+    }
+
+    public void launchAddSong(View v) {
+        Intent addSong = new Intent(this, AddSongActivity.class);
+        startActivity(addSong);
     }
 }

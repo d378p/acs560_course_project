@@ -3,6 +3,8 @@ package com.our_music.connection;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.our_music.database.OurMusicDatabase;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,23 +27,22 @@ public class QueryParser extends AsyncTask<JSONObject, Integer, JSONObject> impl
             connection = ClientConnection.getInstance();
             requestType = MessageType.getType(message.getString("subject"));
             queryType = MessageType.getType(message.getString("queryType"));
-
-
+            response = getRequest(message.toString());
         } catch (JSONException e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return response;
     }
 
     @Override
     public JSONObject getRequest(String... params) {
-        JSONObject json = new JSONObject();
         JSONObject request = null;
         try {
-            json.put("type", MessageType.REQUEST.toString());
-            json.put("subject", MessageType.QUERY.toString());
-            json.put("queryType", queryType);
+            JSONObject json = new JSONObject(params[0]);
+//            json.put("type", MessageType.REQUEST.toString());
+//            json.put("subject", MessageType.QUERY.toString());
+//            json.put("queryType", queryType);
             if (queryType == MessageType.CUSTOM_QUERY) {
                 //TODO
             } else {

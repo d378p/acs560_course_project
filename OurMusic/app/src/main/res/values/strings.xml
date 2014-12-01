@@ -19,5 +19,13 @@
     <string name="top_three">Top 3 Songs from Friends</string>
     <string name="custom_query">Custom Query</string>
     <string name="search_button">Search</string>
+    <string name="results_heading">Query Results</string>
+    <string name="new_search">New Search</string>
+    <string name="home">Return Home</string>
+    <string name="add_song">Add Song</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="song_name">Title</string>
+    <string name="artist_name">Artist</string>
+    <string name="album_name">Album</string>
 
 </resources>

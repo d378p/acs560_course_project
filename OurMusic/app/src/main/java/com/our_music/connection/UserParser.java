@@ -35,7 +35,7 @@ public class UserParser extends AsyncTask<JSONObject, Integer, Boolean> implemen
         }
 
         catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG, e.getMessage()+"3");
             e.printStackTrace();
         }
         return valid;
@@ -63,7 +63,7 @@ public class UserParser extends AsyncTask<JSONObject, Integer, Boolean> implemen
             json.put("password", password);
         }
         catch (JSONException e) {
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG, e.getMessage()+"2");
             e.printStackTrace();
         }
         return json;
@@ -79,7 +79,7 @@ public class UserParser extends AsyncTask<JSONObject, Integer, Boolean> implemen
             json.put("email", email);
         }
         catch (JSONException e) {
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG, e.getMessage()+"1");
             e.printStackTrace();
         }
         return json;
