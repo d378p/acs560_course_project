@@ -15,4 +15,8 @@ public class User {
 		return (username.equals(user) && password.equals(pass) &&
 				email.equals(em));
 	}
+	
+	public boolean verify(String user, String pass) {
+		return (username.equals(user) && password.equals(pass));
+	}
 }

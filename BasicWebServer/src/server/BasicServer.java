@@ -29,7 +29,7 @@ public class BasicServer {
 		System.out.println("Connection successful");
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		PrintWriter outToClient = new PrintWriter(socket.getOutputStream());
-		//while(true){
+		while(true){
 			String test = inFromClient.readLine();
 			System.out.println(test);
 			JSONObject reply = new JSONObject(test);
@@ -41,9 +41,9 @@ public class BasicServer {
 				response = checkCredentials(test);
 			}
 			System.out.println("REPLY: " +response.toString());
-			outToClient.write(response.toString());
+			outToClient.write(response.toString()+"\n");
 			outToClient.flush();
-		//}
+		}
 	}
 	
 	private JSONObject checkCredentials(String jsonString) throws Exception{
@@ -52,6 +52,8 @@ public class BasicServer {
 		System.out.println("password: "+ loginRequest.getString("password"));
 		if(loginRequest.getString("username").equals(userName) &&
 				loginRequest.getString("password").equals(passWord)) {
+			return createJson();
+		} else if (userExists(loginRequest.getString("username"), loginRequest.getString("password"))) {
 			return createJson();
 		}
 		else {
@@ -90,6 +92,15 @@ public class BasicServer {
 	private boolean userExists(String username, String password, String email) {
 		for(User el: users) {
 			if(el.verify(username, password, email)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean userExists(String username, String password) {
+		for(User el : users) {
+			if(el.verify(username, password)) {
 				return true;
 			}
 		}
