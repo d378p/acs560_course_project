@@ -44,15 +44,8 @@ public class Query {
         return id;
     }
 
-    public String getSong() {
-        return song;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getAlbum() {
-        return album;
+    @Override
+    public String toString() {
+        return song + " by " + artist + " from the album " + album;
     }
 }

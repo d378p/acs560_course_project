@@ -24,8 +24,6 @@ public class ResultsActivity extends Activity {
     private TextView queryList;
     private OurMusicDatabase db;
     private List<Query> queries;
-    private final String BY = " By ";
-    private final String FROM = " From the Album ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +39,7 @@ public class ResultsActivity extends Activity {
     private void showQuery() {
         try{
             for(Query el: queries) {
-                queryList.append(el.getSong() + BY + el.getArtist() + FROM + el.getAlbum() + "\n");
+                queryList.append(el.toString() + "\n");
             }
         } catch (NullPointerException e) {
             Log.d(TAG, e.getMessage());

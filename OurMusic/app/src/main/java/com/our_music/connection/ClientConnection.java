@@ -109,7 +109,6 @@ public class ClientConnection {
             pw.println(parsedJson);
             pw.flush();
             returnObject = new JSONObject(reader.readLine());
-            Log.d(TAG, returnObject.toString()+"TEST_DATA");
         }
         catch (IOException e){
             Log.i(TAG, e.getMessage());

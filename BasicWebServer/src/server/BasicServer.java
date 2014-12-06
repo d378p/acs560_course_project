@@ -9,7 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import org.json.JSONObject;
+import org.json.*;
 
 public class BasicServer {
 	
@@ -21,6 +21,7 @@ public class BasicServer {
 	private String userName = "Jared";
 	private String passWord = "aaaa";
 	private ArrayList<User> users = new ArrayList<>();
+	private ArrayList<Song> songs = new ArrayList<>();
 	
 	public BasicServer() throws Exception {
 		System.out.println("Waiting on connection:");
@@ -29,6 +30,7 @@ public class BasicServer {
 		System.out.println("Connection successful");
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		PrintWriter outToClient = new PrintWriter(socket.getOutputStream());
+		generateSongs();
 		while(true){
 			String test = inFromClient.readLine();
 			System.out.println(test);
@@ -39,6 +41,17 @@ public class BasicServer {
 			}
 			else if(reply.getString("subject").equals("LOGIN")) {
 				response = checkCredentials(test);
+			}
+			else if(reply.getString("subject").equals("QUERY")) {
+				response = getTopTen();
+			}
+			else if(reply.getString("subject").equals("ADD_SONG")) {
+				response = addSong(reply);
+			}
+			else if(reply.getString("subject").equals("ADD_FRIEND")) {
+				JSONObject json = new JSONObject();
+				json.put("verifyAdded", true);
+				response = json;
 			}
 			System.out.println("REPLY: " +response.toString());
 			outToClient.write(response.toString()+"\n");
@@ -105,6 +118,40 @@ public class BasicServer {
 			}
 		}
 		return false;
+	}
+	
+	private void generateSongs() {
+		for(int i = 0; i < 12; i++) {
+			Song newSong = new Song("Song" + i, "Artist" + i, "Album" + i);
+			songs.add(newSong);
+		}	
+	}
+	
+	private JSONObject addSong(JSONObject songToAdd) throws Exception {
+		Song song = new Song(songToAdd.getString("songName"), songToAdd.getString("artistName"),
+				songToAdd.getString("albumName"));
+		songs.add(song);
+		JSONObject result = new JSONObject();
+		result.put("verifyAdded", true);
+		return result;
+	}
+	
+	private JSONObject getTopTen() throws Exception{
+		JSONObject topTen = new JSONObject();
+		topTen.put("type", "RESPONSE");
+		topTen.put("subject", "QUERY");
+		topTen.put("queryType", "TOP_TEN");
+		JSONArray songlist = new JSONArray();
+		for(int i = 0; i < 10; i++) {
+			int index = songs.size()-1;
+			JSONArray songSpecs = new JSONArray();
+			songSpecs.put(0, songs.get(index-i).getSong());
+			songSpecs.put(1, songs.get(index-i).getArtist());
+			songSpecs.put(2, songs.get(index-i).getAlbum());
+			songlist.put(i, songSpecs);
+		}
+		topTen.put("topTenSongs", songlist);
+		return topTen;
 	}
 	
 

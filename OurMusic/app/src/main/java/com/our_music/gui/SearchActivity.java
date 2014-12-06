@@ -40,19 +40,19 @@ public class SearchActivity extends Activity{
     }
 
     public void search(View v) {
-        if(topTenRadio.isSelected()) {
+        if(topTenRadio.isChecked()) {
             db.storeQuery(getTopTen());
             Intent resultIntent = new Intent(this, ResultsActivity.class);
             startActivity(resultIntent);
             //TODO Pass getTopTen to a class to parse it and add to database  Possibly DONE!
         }
-        else if(topThreeRadio.isSelected()) {
+        else if(topThreeRadio.isChecked()) {
             db.storeQuery(getTopThree());
             Intent resultIntent = new Intent(this, ResultsActivity.class);
             startActivity(resultIntent);
             //TODO Pass getTopThree to a class to parse it and add to database.  Possibly DONE!
         }
-        else if(customRadio.isSelected()) {
+        else if(customRadio.isChecked()) {
             //TODO
         }
         else {
@@ -68,8 +68,8 @@ public class SearchActivity extends Activity{
             search.put("type", ParseInterface.MessageType.REQUEST.toString());
             search.put("subject", ParseInterface.MessageType.QUERY.toString());
             search.put("queryType", ParseInterface.MessageType.TOP_TEN.toString());
-            AsyncTask searchRequet = new QueryParser().execute();
-            result = (JSONObject)searchRequet.get();
+            AsyncTask searchRequest = new QueryParser().execute(search);
+            result = (JSONObject)searchRequest.get();
         } catch (JSONException e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class SearchActivity extends Activity{
             search.put("type", ParseInterface.MessageType.REQUEST.toString());
             search.put("subject", ParseInterface.MessageType.QUERY.toString());
             search.put("queryType", ParseInterface.MessageType.TOP_THREE_FRIENDS.toString());
-            AsyncTask searchRequest = new QueryParser().execute();
+            AsyncTask searchRequest = new QueryParser().execute(search);
             result = (JSONObject) searchRequest.get();
         } catch (JSONException e) {
             Log.d(TAG, e.getMessage());

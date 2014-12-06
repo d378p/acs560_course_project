@@ -9,6 +9,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.database.OurMusicDatabase;
+import com.our_music.database.Song;
+import com.our_music.database.User;
+
+import java.util.List;
 
 /**
  * Created by Jared at some point in time
@@ -20,6 +25,9 @@ public class HomeActivity extends Activity {
 
     private TextView songList;
     private TextView friendList;
+    private OurMusicDatabase db;
+    private List<Song> songs;
+    private List<User> friends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,23 +35,19 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.activity_home);
         songList = (TextView)findViewById(R.id.recentSongList);
         friendList = (TextView)findViewById(R.id.friendsList);
-        fillSongList();
-        fillFriends();
+        db = new OurMusicDatabase(getApplicationContext());
+        updateLists();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
@@ -51,18 +55,22 @@ public class HomeActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO - Change to getSongList and request songs from server/local db
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateLists();
+    }
+
+    //FIXME!  Order in descending order by ID (Get last 5)
     private void fillSongList() {
-        for(int i = 1; i < 6; i++) {
-            songList.append(String.format("Song# %d\n", i));
-        }
+        for(int i = 0; i < songs.size() && i < 5; i++)
+            songList.append(songs.get(i).toString() + "\n");
     }
 
     //TODO - Change to getFriends and request friends from server/local db
     private void fillFriends() {
-        for(int i = 1; i <6; i++) {
-            friendList.append(String.format("Fname Lname#%d\n", i));
-        }
+        for(int i = 0; i < friends.size() && i < 5; i++)
+            friendList.append(friends.get(i).toString() + "\n");
     }
 
     public void goToSearch(View v) {
@@ -73,5 +81,19 @@ public class HomeActivity extends Activity {
     public void launchAddSong(View v) {
         Intent addSong = new Intent(this, AddSongActivity.class);
         startActivity(addSong);
+    }
+
+    public void launchAddFriend(View v) {
+        Intent addFriend = new Intent(this, AddFriendActivity.class);
+        startActivity(addFriend);
+    }
+
+    private void updateLists() {
+        songList.setText("");
+        songs = db.retrieveUserSongs();
+        fillSongList();
+        friendList.setText("");
+        friends = db.retrieveFriends();
+        fillFriends();
     }
 }

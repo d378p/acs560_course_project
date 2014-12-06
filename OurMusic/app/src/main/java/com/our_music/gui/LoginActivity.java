@@ -35,6 +35,13 @@ public class LoginActivity extends Activity{
     private final String LOGIN_VALID = "TRUE";
     private final String LOGIN_INVALID = "FALSE";
 
+    /*TODO Need to determine if we need to destroy db on login if different user.
+    Probably not an issue, only one user per device.  Maybe include a logout feature to allow a user
+    to logout, and then we can destroy their database, after ensuring the remote db is current of course.
+
+     */
+
+
     @Override
     protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);

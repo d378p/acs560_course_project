@@ -27,5 +27,6 @@
     <string name="song_name">Title</string>
     <string name="artist_name">Artist</string>
     <string name="album_name">Album</string>
+    <string name="friend_username">Friend\'s Username</string>
 
 </resources>

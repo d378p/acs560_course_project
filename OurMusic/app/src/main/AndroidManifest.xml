@@ -9,7 +9,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.our_music.gui.LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:noHistory="true"
+            android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +39,14 @@
         ></activity>
 
         <activity android:name="com.our_music.gui.AddSongActivity"
+            android:label="@string/app_name"
+        ></activity>
+
+        <activity android:name="com.our_music.gui.AddFriendActivity"
+            android:label="@string/app_name"
+        ></activity>
+
+        <activity android:name="com.our_music.gui.ResultsActivity"
             android:label="@string/app_name"
         ></activity>
 

@@ -3,49 +3,42 @@ package com.our_music.connection;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.our_music.database.OurMusicDatabase;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Jared on 11/23/2014.
+ * Created by Jared on 12/6/2014.
  *
- * Used to parse JSON data for query requests and results.
+ * Parsing class that allows us to send songs or friends to add to user's settings.
  */
-public class QueryParser extends AsyncTask<JSONObject, Integer, JSONObject> implements ParseInterface{
-    private final String TAG = UserParser.class.getSimpleName();
+public class AddParser extends AsyncTask <JSONObject, Integer, Boolean> implements ParseInterface {
+    private final String TAG = AddParser.class.getSimpleName();
     private ClientConnection connection = null;
     private MessageType requestType;
-    private MessageType queryType;
 
     @Override
-    protected JSONObject doInBackground(JSONObject... jsonObjects) {
+    protected Boolean doInBackground(JSONObject... jsonObjects) {
         JSONObject message = jsonObjects[0];
         JSONObject response = null;
+        boolean valid = false;
         try {
             connection = ClientConnection.getInstance();
             requestType = MessageType.getType(message.getString("subject"));
-            queryType = MessageType.getType(message.getString("queryType"));
             response = getRequest(message.toString());
-        } catch (JSONException e) {
+            valid = response.getBoolean("verifyAdded");
+        } catch (Exception e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();
         }
-        return response;
+        return valid;
     }
 
     @Override
     public JSONObject getRequest(String... params) {
         JSONObject request = null;
-        try {
+        try{
             JSONObject json = new JSONObject(params[0]);
-            if (queryType == MessageType.CUSTOM_QUERY) {
-                //TODO
-            } else {
-                request = connection.requestData(json.toString());
-            }
-        } catch (JSONException e) {
+            request = connection.requestData(json.toString());
+        } catch (Exception e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();
         }
