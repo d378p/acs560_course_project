@@ -21,8 +21,8 @@ import java.net.Socket;
 /**
  * Created by Jared on 11/15/2014.
  *
- * Singleton class to handle the connection.  Designed to be called by the Parser class.  All
- * methods are protected, so only Parser has the ability to manage the connection.
+ * Singleton class to handle the connection.  Designed to be called by a parser class.  All
+ * methods are protected, so only a parsing class has the ability to manage the connection.
  */
 public class ClientConnection {
     private static ClientConnection instance = null;
@@ -65,7 +65,7 @@ public class ClientConnection {
             }
             catch (Exception e){
                 reconnectAttempts++;
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, e.toString());
                 try{
                     Log.i(TAG, "Unable to connect to server, waiting " +
                             RECONNECT_MULTIPLIER * reconnectAttempts + "ms");
@@ -98,7 +98,7 @@ public class ClientConnection {
         }
     }
 
-    protected void resetConnection() {
+    public void resetConnection() {
         closeConnection();
         setupConnection();
     }

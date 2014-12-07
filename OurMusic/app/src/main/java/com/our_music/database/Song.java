@@ -2,6 +2,8 @@ package com.our_music.database;
 
 /**
  * Created by Jared on 12/4/2014.
+ *
+ * Song object to store
  */
 public class Song {
     private int id;
@@ -19,6 +21,10 @@ public class Song {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

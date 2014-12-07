@@ -16,8 +16,9 @@ import java.util.List;
 /**
  * Created by Jared on 11/29/2014.
  *
- * Database helper.  Mainly used to store queries received from server.  We only store one query,
- * and as soon as we want another we clear the table and put the new query results in there.
+ * Database helper.  Local database stores the current user's friend list, song list, and latest
+ * query result.  Only stores one query, and as soon as another is requested the table is cleared
+ * and the new query results are stored there.
  */
 public class OurMusicDatabase extends SQLiteOpenHelper{
     private final String TAG = OurMusicDatabase.class.getSimpleName();
@@ -29,10 +30,10 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
     private static final int ARTIST = 1;
     private static final int ALBUM = 2;
 
-    private static String CREATE_USER_FRIENDS_TABLE =
-            "CREATE TABLE " + OurMusicContract.UserFriends.TABLE_NAME + " (" +
-                    OurMusicContract.UserFriends._ID + " INTEGER PRIMARY KEY," +
-                    OurMusicContract.UserFriends.COLUMN_NAME_FRIENDS_ID + TEXT_TYPE + ")";
+    private static String CREATE_USER_FRIENDS_TABLE ="CREATE TABLE " +
+            OurMusicContract.UserFriends.TABLE_NAME + " (" +
+            OurMusicContract.UserFriends._ID + " INTEGER PRIMARY KEY," +
+            OurMusicContract.UserFriends.COLUMN_NAME_FRIENDS_ID + TEXT_TYPE + ")";
 
     private static final String CREATE_USER_SONGS_TABLE = "CREATE TABLE " +
             OurMusicContract.UserSongs.TABLE_NAME + " (" +
@@ -69,6 +70,11 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         onCreate(sqLiteDatabase);
     }
 
+    /**
+     * Stores the query result received from the remote server
+     * @param json contains JSONArray that contains JSONArrays of all songs in the query
+     * @return id of last inserted row
+     */
     public long storeQuery(JSONObject json) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -90,6 +96,11 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         return id;
     }
 
+    /**
+     * Stores latest song check-in in the local database
+     * @param song contains title, artist, and album of song
+     * @return id of the new song
+     */
     public long addSong(JSONObject song) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -106,6 +117,11 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         return id;
     }
 
+    /**
+     * Stores the latest friend in the local database
+     * @param friend contains name of friend to be added
+     * @return the id of the new friend
+     */
     public long addFriend(JSONObject friend) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -120,14 +136,50 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         return id;
     }
 
-    public List<Query> retrieveQuery() {
-        List<Query> results = new ArrayList<Query>();
+    /**
+     * This is called every time a successful login occurs to ensure the correct
+     * information for the correct user is being used.
+     * @param remoteDb JSONObject containing contents of friend table and song table of user on the
+     *                 remote database
+     */
+    public void initializeDatabse(JSONObject remoteDb) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        try {
+            db.execSQL("DELETE FROM " + OurMusicContract.UserFriends.TABLE_NAME);
+            JSONArray friends = remoteDb.getJSONArray("friendsList");
+            for(int i = 0; i < friends.length(); i++) {
+                values.put(OurMusicContract.UserFriends.COLUMN_NAME_FRIENDS_ID, friends.getString(i));
+                db.insert(OurMusicContract.UserFriends.TABLE_NAME, null, values);
+            }
+            values.clear();
+            JSONArray songs = remoteDb.getJSONArray("songList");
+            for(int i = 0; i < songs.length(); i++) {
+                JSONArray songDetails = songs.getJSONArray(i);
+                values.put(OurMusicContract.UserSongs.COLUMN_NAME_SONG_TITLE, songDetails.getString(SONG));
+                values.put(OurMusicContract.UserSongs.COLUMN_NAME_SONG_ARTIST, songDetails.getString(ARTIST));
+                values.put(OurMusicContract.UserSongs.COLUMN_NAME_SONG_ALBUM, songDetails.getString(ALBUM));
+                db.insert(OurMusicContract.UserSongs.TABLE_NAME, null, values);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Retrieves the latest query results received from the remote server
+     * @return all songs included in the query
+     */
+    public List<Song> retrieveQuery() {
+        List<Song> results = new ArrayList<Song>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + OurMusicContract.QueryResults.TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + OurMusicContract.QueryResults.TABLE_NAME +
+                " ORDER BY " + OurMusicContract.QueryResults._ID + " DESC";
         Cursor c = db.rawQuery(selectQuery, null);
         if(c.moveToFirst()) {
             do {
-                Query newQuery = new Query();
+                Song newQuery = new Song();
                 newQuery.setId(c.getInt(c.getColumnIndex(OurMusicContract.QueryResults._ID)));
                 newQuery.setSong(c.getString(c.getColumnIndex(OurMusicContract.QueryResults.COLUMN_NAME_SONG_TITLE)));
                 newQuery.setArtist(c.getString(c.getColumnIndex(OurMusicContract.QueryResults.COLUMN_NAME_SONG_ARTIST)));
@@ -138,10 +190,16 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         return results;
     }
 
+    /**
+     * Retrieves the songs checked in by the user.  Only gets the last five for display on the home
+     * screen.
+     * @return last five songs added by the user
+     */
     public List<Song> retrieveUserSongs() {
         List<Song> results = new ArrayList<Song>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + OurMusicContract.UserSongs.TABLE_NAME;
+        String sql = "SELECT * FROM " + OurMusicContract.UserSongs.TABLE_NAME + " ORDER BY "
+                + OurMusicContract.UserSongs._ID + " DESC";
         Cursor c = db.rawQuery(sql, null);
         if(c.moveToFirst()) {
             int count = 0;
@@ -156,10 +214,15 @@ public class OurMusicDatabase extends SQLiteOpenHelper{
         return results;
     }
 
+    /**
+     * Retrieves all friends of the user.
+     * @return all friends of the user
+     */
     public List<User> retrieveFriends() {
         List<User> friends = new ArrayList<User>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + OurMusicContract.UserFriends.TABLE_NAME;
+        String sql = "SELECT * FROM " + OurMusicContract.UserFriends.TABLE_NAME + " ORDER BY "
+                + OurMusicContract.UserFriends._ID + " DESC ";
         Cursor c = db.rawQuery(sql, null);
         if(c.moveToFirst()) {
             do {

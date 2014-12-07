@@ -42,6 +42,9 @@ public class BasicServer {
 			else if(reply.getString("subject").equals("LOGIN")) {
 				response = checkCredentials(test);
 			}
+			else if(reply.getString("subject").equals("INIT")) {
+				response = initDB();
+			}
 			else if(reply.getString("subject").equals("QUERY")) {
 				response = getTopTen();
 			}
@@ -143,15 +146,33 @@ public class BasicServer {
 		topTen.put("queryType", "TOP_TEN");
 		JSONArray songlist = new JSONArray();
 		for(int i = 0; i < 10; i++) {
-			int index = songs.size()-1;
 			JSONArray songSpecs = new JSONArray();
-			songSpecs.put(0, songs.get(index-i).getSong());
-			songSpecs.put(1, songs.get(index-i).getArtist());
-			songSpecs.put(2, songs.get(index-i).getAlbum());
+			songSpecs.put(0, songs.get(i).getSong());
+			songSpecs.put(1, songs.get(i).getArtist());
+			songSpecs.put(2, songs.get(i).getAlbum());
 			songlist.put(i, songSpecs);
 		}
 		topTen.put("topTenSongs", songlist);
 		return topTen;
+	}
+	
+	private JSONObject initDB() throws Exception{
+		JSONObject dbToSendToClient = new JSONObject();
+		JSONArray friends = new JSONArray();
+		for(int i = 0; i < 50; i++) {
+			friends.put(i, "Friend  #" + i);
+		}
+		dbToSendToClient.put("friendsList", friends);
+		JSONArray songList = new JSONArray();
+		for(int i = 0; i < 50; i++) {
+			JSONArray songSpecs = new JSONArray();
+			songSpecs.put(0, "Song #" + i);
+			songSpecs.put(1, "Artist #" + i);
+			songSpecs.put(2, "Album #" + i);
+			songList.put(i, songSpecs);
+		}
+		dbToSendToClient.put("songList", songList);
+		return dbToSendToClient;
 	}
 	
 
