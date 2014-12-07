@@ -1,5 +1,5 @@
 
-import DataBase
+#import DataBase
 import SocketServer
 import json
 
@@ -12,7 +12,7 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
     
     def handle(self): 
         
-        db = DataBase.DataBase()      
+        #db = DataBase.DataBase()      
         
         #get data
         self.data = self.rfile.readline()
@@ -20,26 +20,26 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
         self.data = self.data[2:-3]        
         print self.data
                 
-        keyAndValue =  self.data.split(',')[0];
+        keyAndValue =  self.data.split(',')[1];
         subject = keyAndValue.split(':')[1];
         print 'subject = '+subject
         
-        print subject is 'NEW_USER'
+        print subject == 'NEW_USER'
         
         if subject == 'NEW_USER':
-                keyAndValue =  self.data.split(',')[1];
+                keyAndValue =  self.data.split(',')[2];
                 username = keyAndValue.split(':')[1];
                 print 'username = '+username
         
-                keyAndValue =  self.data.split(',')[2];
+                keyAndValue =  self.data.split(',')[3];
                 password = keyAndValue.split(':')[1];
                 print 'password = '+password
         
-                keyAndValue =  self.data.split(',')[3];
+                keyAndValue =  self.data.split(',')[4];
                 email = keyAndValue.split(':')[1];
                 print 'email = '+ email
                 
-                validity = db.createUser(username, password, email)
+                #validity = db.createUser(username, password, email)
                 validity='TRUE'
                 print 'validity = '+validity
         
