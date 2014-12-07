@@ -65,7 +65,7 @@ public class ClientConnection {
             }
             catch (Exception e){
                 reconnectAttempts++;
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, e.toString());
                 try{
                     Log.i(TAG, "Unable to connect to server, waiting " +
                             RECONNECT_MULTIPLIER * reconnectAttempts + "ms");
@@ -98,7 +98,7 @@ public class ClientConnection {
         }
     }
 
-    protected void resetConnection() {
+    public void resetConnection() {
         closeConnection();
         setupConnection();
     }

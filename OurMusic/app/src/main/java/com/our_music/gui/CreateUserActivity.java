@@ -35,6 +35,7 @@ public class CreateUserActivity extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newuser);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         username = (EditText)findViewById(R.id.loginBoxNewUser);
         password = (EditText)findViewById(R.id.passwordBoxNewUser);
         confirmPassword = (EditText)findViewById(R.id.confirmPasswordBoxNewUser);

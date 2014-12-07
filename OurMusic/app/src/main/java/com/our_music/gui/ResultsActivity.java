@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.ClientConnection;
 import com.our_music.database.OurMusicDatabase;
 import com.our_music.database.Song;
 
@@ -29,11 +33,39 @@ public class ResultsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         queryType = (TextView)findViewById(R.id.result_type);
         queryList = (TextView)findViewById(R.id.query_list);
         db = new OurMusicDatabase(getApplicationContext());
         queries = db.retrieveQuery();
         showQuery();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout() {
+        ClientConnection.getInstance().resetConnection();
+        Intent toLoginScreen = new Intent(this, LoginActivity.class);
+        toLoginScreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(toLoginScreen);
     }
 
     /**

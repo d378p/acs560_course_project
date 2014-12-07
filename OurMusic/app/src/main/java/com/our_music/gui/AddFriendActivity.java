@@ -30,6 +30,7 @@ public class AddFriendActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         db = new OurMusicDatabase(getApplicationContext());
         friendUserName = (EditText) findViewById(R.id.friend_username_box);
     }

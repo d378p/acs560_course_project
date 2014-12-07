@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
 import com.example.jared.ourmusic.R;
 import com.our_music.connection.AddParser;
+import com.our_music.connection.ClientConnection;
 import com.our_music.connection.ParseInterface;
 import com.our_music.database.OurMusicDatabase;
 
@@ -32,10 +36,38 @@ public class AddSongActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_song);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         db = new OurMusicDatabase(getApplicationContext());
         songName = (EditText) findViewById(R.id.song_title_field);
         artistName = (EditText) findViewById(R.id.song_artist_field);
         albumName = (EditText) findViewById(R.id.song_album_field);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout() {
+        ClientConnection.getInstance().resetConnection();
+        Intent toLoginScreen = new Intent(this, LoginActivity.class);
+        toLoginScreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(toLoginScreen);
     }
 
     /**

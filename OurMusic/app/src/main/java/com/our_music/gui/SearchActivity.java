@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.ClientConnection;
 import com.our_music.connection.ParseInterface;
 import com.our_music.connection.QueryParser;
 import com.our_music.database.OurMusicDatabase;
@@ -33,10 +37,38 @@ public class SearchActivity extends Activity{
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_search);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         topTenRadio = (RadioButton)findViewById(R.id.topTen);
         topThreeRadio = (RadioButton)findViewById(R.id.topThree);
         customRadio = (RadioButton)findViewById(R.id.custom);
         db = new OurMusicDatabase(getApplicationContext());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout() {
+        ClientConnection.getInstance().resetConnection();
+        Intent toLoginScreen = new Intent(this, LoginActivity.class);
+        toLoginScreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(toLoginScreen);
     }
 
     /**

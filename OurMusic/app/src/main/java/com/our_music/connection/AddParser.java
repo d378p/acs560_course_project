@@ -36,8 +36,7 @@ public class AddParser extends AsyncTask <JSONObject, Integer, Boolean> implemen
     public JSONObject getRequest(String... params) {
         JSONObject request = null;
         try{
-            JSONObject json = new JSONObject(params[0]);
-            request = connection.requestData(json.toString());
+            request = connection.requestData(params[0]);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();

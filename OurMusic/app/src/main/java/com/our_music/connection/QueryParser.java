@@ -39,13 +39,12 @@ public class QueryParser extends AsyncTask<JSONObject, Integer, JSONObject> impl
     public JSONObject getRequest(String... params) {
         JSONObject request = null;
         try {
-            JSONObject json = new JSONObject(params[0]);
             if (queryType == MessageType.CUSTOM_QUERY) {
                 //TODO
             } else {
-                request = connection.requestData(json.toString());
+                request = connection.requestData(params[0]);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.d(TAG, e.getMessage());
             e.printStackTrace();
         }
