@@ -39,18 +39,20 @@ public class SearchActivity extends Activity{
         db = new OurMusicDatabase(getApplicationContext());
     }
 
+    /**
+     * Will request results for selected query from the remote server and store results in local database
+     * @param v
+     */
     public void search(View v) {
         if(topTenRadio.isChecked()) {
             db.storeQuery(getTopTen());
             Intent resultIntent = new Intent(this, ResultsActivity.class);
             startActivity(resultIntent);
-            //TODO Pass getTopTen to a class to parse it and add to database  Possibly DONE!
         }
         else if(topThreeRadio.isChecked()) {
             db.storeQuery(getTopThree());
             Intent resultIntent = new Intent(this, ResultsActivity.class);
             startActivity(resultIntent);
-            //TODO Pass getTopThree to a class to parse it and add to database.  Possibly DONE!
         }
         else if(customRadio.isChecked()) {
             //TODO
@@ -61,6 +63,10 @@ public class SearchActivity extends Activity{
         }
     }
 
+    /**
+     * Issues request for Top Ten songs for all users
+     * @return JSONArray containg JSONArrays of song title, artist, and album
+     */
     private JSONObject getTopTen() {
         JSONObject search = new JSONObject();
         JSONObject result = null;
@@ -80,6 +86,10 @@ public class SearchActivity extends Activity{
         return result;
     }
 
+    /**
+     * Issues request for Top Three songs amongst the user's friends
+     * @return JSONArray containg JSONArrays of song title, artist, and album
+     */
     private JSONObject getTopThree() {
         JSONObject search = new JSONObject();
         JSONObject result = null;

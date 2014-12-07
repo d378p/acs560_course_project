@@ -38,6 +38,10 @@ public class AddSongActivity extends Activity {
         albumName = (EditText) findViewById(R.id.song_album_field);
     }
 
+    /**
+     * Adds new song to local database and then sends to remote database for permanent storage
+     * @param v
+     */
     public void addSong(View v) {
         String song = String.valueOf(songName.getText());
         String artist = String.valueOf(artistName.getText());

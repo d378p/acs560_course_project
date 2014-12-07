@@ -2,6 +2,8 @@ package com.our_music.database;
 
 /**
  * Created by Jared on 12/6/2014.
+ *
+ * User object to hold username of possible friends
  */
 public class User {
     private String username;

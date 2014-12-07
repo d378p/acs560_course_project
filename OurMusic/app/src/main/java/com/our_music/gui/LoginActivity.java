@@ -2,20 +2,18 @@ package com.our_music.gui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
+import com.our_music.connection.InitDbParser;
 import com.our_music.connection.ParseInterface;
-import com.our_music.connection.Parser;
 import com.our_music.connection.UserParser;
+import com.our_music.database.OurMusicDatabase;
 
 import org.json.JSONObject;
 
@@ -29,18 +27,7 @@ public class LoginActivity extends Activity{
     private static final String TAG = LoginActivity.class.getSimpleName();
     private EditText username;
     private EditText password;
-    private TextView loginText;
-    private TextView passwordText;
-    private Button loginButton;
-    private final String LOGIN_VALID = "TRUE";
-    private final String LOGIN_INVALID = "FALSE";
-
-    /*TODO Need to determine if we need to destroy db on login if different user.
-    Probably not an issue, only one user per device.  Maybe include a logout feature to allow a user
-    to logout, and then we can destroy their database, after ensuring the remote db is current of course.
-
-     */
-
+    private OurMusicDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -48,11 +35,15 @@ public class LoginActivity extends Activity{
         setContentView(R.layout.activity_login);
         username = (EditText)findViewById(R.id.loginBox);
         password = (EditText)findViewById(R.id.passwordBox);
-        loginText = (TextView)findViewById(R.id.loginTextView);
-        passwordText = (TextView)findViewById(R.id.passwordText);
-        loginButton = (Button)findViewById(R.id.loginButton);
+        db = new OurMusicDatabase(getApplicationContext());
     }
 
+    /**
+     * When login button is clicked, verifies if username and password exist on remote server and
+     * lets user continue if so.  Otherwise the user can attempt to login again.
+     * @param v
+     * @throws Exception
+     */
     public void login(View v) throws Exception{
         String user = String.valueOf(username.getText());
         String pass = String.valueOf(password.getText());
@@ -63,16 +54,27 @@ public class LoginActivity extends Activity{
         login.put("password", pass);
         AsyncTask loginParser = new UserParser().execute(login);
         boolean result = (Boolean)loginParser.get();
-        //Log.d(TAG, result);
-        if(result){
+        if(result) {
+            Log.i(TAG, user + "logged in successfully");
+            JSONObject init = new JSONObject();
+            init.put("type", ParseInterface.MessageType.REQUEST.toString());
+            init.put("subject", ParseInterface.MessageType.INIT.toString());
+            AsyncTask initDb = new InitDbParser().execute(init);
+            JSONObject copyOfRemoteDb = (JSONObject) initDb.get();
+            db.initializeDatabse(copyOfRemoteDb);
             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
             Intent homeIntent = new Intent(this, HomeActivity.class);
             startActivity(homeIntent);
         } else {
             Toast.makeText(getApplicationContext(), "FAILED", Toast.LENGTH_LONG).show();
+            Log.i(TAG, "Login failed for user: " + user);
         }
     }
 
+    /**
+     * Launches a new activity to create a user when Create User button is clicked
+     * @param v
+     */
     public void createUser(View v) {
         Intent createUser = new Intent(this, CreateUserActivity.class);
         startActivity(createUser);

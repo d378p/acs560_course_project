@@ -16,6 +16,10 @@ import java.util.Map;
 public interface ParseInterface {
 
     public final String TAG = ParseInterface.class.getSimpleName();
+
+    /**
+     * Defined types, subjects, and queries that can be sent in JSONObject to remote server
+     */
     public enum MessageType {
         REQUEST, RESPONSE, INIT, LOGIN, QUERY, DB_UPDATE, ADD_FRIEND, ADD_SONG, NEW_USER,
         GET_SONGS, GET_FRIENDS, TOP_TEN, TOP_THREE_FRIENDS, CUSTOM_QUERY;

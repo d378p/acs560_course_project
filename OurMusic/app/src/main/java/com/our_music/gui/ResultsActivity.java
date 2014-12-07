@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.example.jared.ourmusic.R;
 import com.our_music.database.OurMusicDatabase;
-import com.our_music.database.Query;
+import com.our_music.database.Song;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class ResultsActivity extends Activity {
     private TextView queryType;
     private TextView queryList;
     private OurMusicDatabase db;
-    private List<Query> queries;
+    private List<Song> queries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +36,12 @@ public class ResultsActivity extends Activity {
         showQuery();
     }
 
+    /**
+     * Displays query results on activity page
+     */
     private void showQuery() {
         try{
-            for(Query el: queries) {
+            for(Song el: queries) {
                 queryList.append(el.toString() + "\n");
             }
         } catch (NullPointerException e) {
@@ -48,10 +51,18 @@ public class ResultsActivity extends Activity {
         }
     }
 
+    /**
+     * Takes user back to search page so another query can be performed
+     * @param v
+     */
     public void returnToSearch(View v) {
         finish();
     }
 
+    /**
+     * Takes user back to home page
+     * @param v
+     */
     public void returnHome(View v) {
         Intent goHome = new Intent(this, HomeActivity.class);
         goHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

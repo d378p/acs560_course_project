@@ -18,6 +18,8 @@ import org.json.JSONObject;
 
 /**
  * Created by Jared on 12/6/2014.
+ *
+ * Activity for adding a user as a friend
  */
 public class AddFriendActivity extends Activity {
     private final String TAG = AddFriendActivity.class.getSimpleName();
@@ -32,6 +34,12 @@ public class AddFriendActivity extends Activity {
         friendUserName = (EditText) findViewById(R.id.friend_username_box);
     }
 
+    /**
+     * Sends possible new friend to remote server.  If that user exists they are added as a friend
+     * in the remote database and a notification is sent back.  Then the user is added to the Friends
+     * table on the local db.
+     * @param v
+     */
     public void addFriend(View v) {
         String friendUser = String.valueOf(friendUserName.getText());
         if(friendUser.isEmpty()) {

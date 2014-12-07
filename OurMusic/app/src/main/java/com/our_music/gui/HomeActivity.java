@@ -61,13 +61,11 @@ public class HomeActivity extends Activity {
         updateLists();
     }
 
-    //FIXME!  Order in descending order by ID (Get last 5)
     private void fillSongList() {
         for(int i = 0; i < songs.size() && i < 5; i++)
             songList.append(songs.get(i).toString() + "\n");
     }
 
-    //TODO - Change to getFriends and request friends from server/local db
     private void fillFriends() {
         for(int i = 0; i < friends.size() && i < 5; i++)
             friendList.append(friends.get(i).toString() + "\n");

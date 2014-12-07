@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.example.jared.ourmusic.R;
 import com.our_music.connection.ParseInterface;
-import com.our_music.connection.Parser;
 import com.our_music.connection.UserParser;
 
 import org.json.JSONException;
