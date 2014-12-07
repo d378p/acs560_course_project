@@ -16,37 +16,49 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
         
         #get data
         self.data = self.rfile.readline()
-        #trim end off data
-        self.data = self.data[2:-3]        
-        print self.data
-                
-        keyAndValue =  self.data.split(',')[1];
-        subject = keyAndValue.split(':')[1];
-        print 'subject = '+subject
         
-        print subject == 'NEW_USER'
+        decoded = json.loads(self.data)
+ 
+        # pretty printing of json-formatted string
+        print json.dumps(decoded, sort_keys=True, indent=4)
+ 
+        print "JSON parsing example: ", decoded["subject"]
         
-        if subject == 'NEW_USER':
-                keyAndValue =  self.data.split(',')[2];
-                username = keyAndValue.split(':')[1];
-                print 'username = '+username
         
-                keyAndValue =  self.data.split(',')[3];
-                password = keyAndValue.split(':')[1];
-                print 'password = '+password
+          
         
-                keyAndValue =  self.data.split(',')[4];
-                email = keyAndValue.split(':')[1];
-                print 'email = '+ email
-                
-                #validity = db.createUser(username, password, email)
-                validity='TRUE'
-                print 'validity = '+validity
-        
-                #must convert result to string
-                #before writing
-                self.wfile.write(str(validity))
-     
+#         #trim end off data
+#         self.data = self.data[2:-3]        
+#         print self.data
+#                 
+#         keyAndValue =  self.data.split(',')[1];
+#         subject = keyAndValue.split(':')[1];
+#         print 'subject = '+subject
+#         
+#         print subject == 'NEW_USER'
+#         
+#         if subject == 'NEW_USER':
+#                 keyAndValue =  self.data.split(',')[2];
+#                 username = keyAndValue.split(':')[1];
+#                 print 'username = '+username
+#         
+#                 keyAndValue =  self.data.split(',')[3];
+#                 password = keyAndValue.split(':')[1];
+#                 print 'password = '+password
+#         
+#                 keyAndValue =  self.data.split(',')[4];
+#                 email = keyAndValue.split(':')[1];
+#                 print 'email = '+ email
+#                 
+#                 validity = db.createUser(username, password, email)
+        validity='{"validity":true,"subject":"NEW_USER","type":"RESPONSE"}'
+                  
+        print 'validity = '+validity
+#         
+#                 #must convert result to string
+#                 #before writing
+        self.wfile.write(str(validity))
+#      
      
 
 if __name__== "__main__":
