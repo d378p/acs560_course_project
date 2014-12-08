@@ -22,7 +22,7 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
         #print json.dumps(decoded, sort_keys=True, indent=4) 
         #print "subject = ", decoded["subject"]
         subject=decoded["subject"]
-               
+        print subject
         #print subject == 'NEW_USER'         
         if subject == 'NEW_USER':
                 
@@ -44,12 +44,13 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
                 print 'password = '+password  
                 
                 validity=database.checkCredentials(username, password);       
-                print 'validity = '+validity
+                print 'LOGIN = '+validity
                 
         elif subject == 'INIT':
                 
                 validity=database.getSongs(username);               
-         
+                print 'INIT = '+validity
+                
         #must convert result to string
         #before writing    
         self.wfile.write(str(validity))         
@@ -60,6 +61,7 @@ if __name__== "__main__":
     server = SocketServer.TCPServer((HOST, PORT), TestTCPHandler) 
     print 'Waiting on connection:'
     server.serve_forever()
+    
     
    
     
