@@ -53,11 +53,9 @@ public class ClientConnection {
     protected void setupConnection() {
         if(reconnectAttempts < MAX_RECONNECTS){
             try{
-                //InetAddress serverAddress = InetAddress.getByName(SERVER_ADDRESS);
                 socket = new Socket(SERVER_ADDRESS, PORT);
                 outStream = new DataOutputStream(socket.getOutputStream());
                 inStream = new DataInputStream(socket.getInputStream());
-                //pw = new PrintWriter(outStream);
                 pw = new PrintWriter(socket.getOutputStream(), true);
                 reader = new BufferedReader(new InputStreamReader(inStream));
                 reconnectAttempts = 0;

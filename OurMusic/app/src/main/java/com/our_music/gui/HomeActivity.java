@@ -24,7 +24,7 @@ import java.util.List;
  * Activity for main page of app.  Displays a current song list and friend list of the user.
  */
 
-public class HomeActivity extends LoginActivity {
+public class HomeActivity extends Activity {
 
     private TextView songList;
     private TextView friendList;

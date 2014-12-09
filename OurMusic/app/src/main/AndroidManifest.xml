@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jared.ourmusic" >
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -29,7 +30,7 @@
 
         <activity
             android:name="com.our_music.gui.CreateUserActivity"
-            android:label="@string/create_account"
+            android:label="@string/create_account_btn"
             android:parentActivityName="com.our_music.gui.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
