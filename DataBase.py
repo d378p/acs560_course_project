@@ -2,9 +2,8 @@
 
 import MySQLdb
 
-class DataBase:        
-    
-   
+class DataBase:
+      
     def createUser(self, username, password, email):
         # connect        
         db = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="", db="ourmusic")
@@ -22,29 +21,22 @@ class DataBase:
             cursor.execute(sql)            
             # commit your changes
             db.commit()           
-            exist = True         
-             
+            exist = True             
         elif exists == True:
-            exist = True;#should be false
-         
-        db.close()   
-            
+            exist = False;         
+        db.close()           
         validity = '{"validity":%s,"subject":"NEW_USER","type":"RESPONSE"}'% (exist)         
         return validity
     
     def userExists(self, username, password, email):
             # connect
-            db = MySQLdb.connect(host="localhost", port=3306, user="root",passwd="",db="ourmusic")
-               
-            cursor = db.cursor()
-                         
+            db = MySQLdb.connect(host="localhost", port=3306, user="root",passwd="",db="ourmusic")               
+            cursor = db.cursor()                         
             sql = "SELECT username s, count(*) FROM LoginList where username='%s' and password='%s'and email='%s';" % (username,password,email)
-                 
             str1=""
             try:
                 # Execute the SQL command
-                cursor.execute(sql)           
-            
+                cursor.execute(sql)            
                 # Fetch all the rows in a list of lists.
                 results = cursor.fetchall()               
                 data = ''
@@ -55,36 +47,26 @@ class DataBase:
                         totalData = data            
                         #how to tokenize string
                         tokens = totalData.split('\n')
-                        str1 = str(tokens[0])
-                        print str1                       
-            
+                        str1 = str(tokens[0])                        
             except:
                 print "Error: unable to fecth data"
-
                 # disconnect from server
-                db.close()
-       
+                db.close()       
             if str1 == username:
                 validity = True
             else:
-                validity = False
-        
-            #print validity      
+                validity = False             
             return validity
-        
+                
     def userExists2(self, username, password):
             # connect
-            db = MySQLdb.connect(host="localhost", port=3306, user="root",passwd="",db="ourmusic")
-               
-            cursor = db.cursor()
-                         
-            sql = "SELECT username s, count(*) FROM LoginList where username='%s' and password='%s';" % (username,password)
-                 
+            db = MySQLdb.connect(host="localhost", port=3306, user="root",passwd="",db="ourmusic")               
+            cursor = db.cursor()                         
+            sql = "SELECT username s, count(*) FROM LoginList where username='%s' and password='%s';" % (username,password)                 
             str1=""
             try:
                 # Execute the SQL command
                 cursor.execute(sql)           
-            
                 # Fetch all the rows in a list of lists.
                 results = cursor.fetchall()               
                 data = ''
@@ -95,23 +77,17 @@ class DataBase:
                         totalData = data            
                         #how to tokenize string
                         tokens = totalData.split('\n')
-                        str1 = str(tokens[0])
-                        print str1                       
-            
+                        str1 = str(tokens[0])    
             except:
                 print "Error: unable to fecth data"
-
                 # disconnect from server
-                db.close()
-       
+                db.close()       
             if str1 == username:
                 validity = True
             else:
-                validity = False
-        
-            #print validity      
+                validity = False              
             return validity
-        
+               
     def checkCredentials(self, username, password):                
         exists = self.userExists2(username, password)                
         if exists==True:
@@ -123,15 +99,10 @@ class DataBase:
     def getSongs(self,username):
             # connect       
             db = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="",db="ourmusic")        
-            cursor = db.cursor()
-                         
+            cursor = db.cursor()                         
             sql = "SELECT * FROM SongList WHERE friend IN ( '%s' )" % (username); 
             # Execute the SQL command
-            cursor.execute(sql)
-            
-            #try:
-                           
-                       
+            cursor.execute(sql)               
             data = ''
             totalData = ''
             songJson = ''
@@ -139,22 +110,16 @@ class DataBase:
             str1=''
             str2=''           
             # Fetch all the rows in a list of lists.
-            results = cursor.fetchall()                 
-                
+            results = cursor.fetchall()            
             if results==None:
-                songJson = '{"songs":[{"songName":"%s","albumName":"%s","artistName":"%s"}]' % ('noSong', 'noAlbum', 'noArtist') 
-                print songJson
-            else:
-                
+                songJson = '{"songs":[{"songName":"%s","albumName":"%s","artistName":"%s"}]' % ('noSong', 'noAlbum', 'noArtist')                
+            else:                
                 str1 = '{"songs":"['                             
                 for list in results:                     
                     count=count+1
                     data=''                                  
-                    for number in list:                                      
-                        #data = data+str(number)+"\n" 
-                        data = data+str(number)+" "                               
-                        
-            
+                    for number in list:                
+                        data = data+str(number)+" "           
                     #how to tokenize string
                     #tokens = totalData.split('\n')
                     tokens = data.split(' ')                        
@@ -165,17 +130,96 @@ class DataBase:
                         str2 = str1+','
                         str1=''
                     songJson = songJson+str2
-                                             
-            print songJson           
-            return songJson          
+            # disconnect from server
+            db.close()             
+            return songJson     
+
+    def getTopTen(self,decoded):
+        # complete after server
+        # issue is resolved
+        # so code can be tested out
+        
+        username = decoded["username"];  
+        # connect       
+        db = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="",db="ourmusic")       
+        cursor = db.cursor()
+        
+        sql = "SELECT Song s, count(*) \
+                         FROM SongList \
+                         WHERE friend IN ( '%S') \
+                         group by Song \
+                         order by count(*) desc \
+                         limit 10 ;" %(username)
+                         
+        try:
+            # Execute the SQL command
+            cursor.execute(sql)      
+            # Fetch all the rows in a list of lists.
+            results = cursor.fetchall()
+            #results = cursor.fetchone()
+            #results = cursor.fetchmany(1)
+            data = ''
+            totalData = ''  
+            for list in results:               
+                for number in list:                                      
+                    data = data+str(number)+"\n" 
+                    #data = data+str(number)+" "                               
+            totalData = data
             
-            #except:
-                #print "Error: unable to fecth data"
-                # disconnect from server
-            db.close() 
+            #how to tokenize string
+            tokens = totalData.split('\n')
+            str1 = str(tokens[0])+" "+str(tokens[1])
+            # disconnect from server
+            db.close()     
+            return str1      
+        except:
+            print "Error: unable to fecth data"
+                       
+       
             
-
-
-   
-
+    def addSong(self, decoded):
+        # complete after server
+        # issue is resolved
+        # so code can be tested
+        
+        # connect                      
+        songName = decoded["songName"];                        
+        albumName = decoded["albumName"];                             
+        artistName = decoded["artistName"];               
+        db = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="", db="ourmusic")
+        # set cursor
+        cursor = db.cursor()      
+        # insert into db       
+        sql = "INSERT INTO LoginList (songName, albumName, artistName) VALUES ('%s','%s','%s')" % (songName, albumName, artistName);       
+        # Execute the SQL command
+        cursor.execute(sql)        
+        # commit your changes
+        db.commit()       
+        validity = '{"validity":true}'       
+        return validity 
+          
+    
+    def addFriend(self, decoded):
+        # complete after server
+        # issue is resolved
+        # so code can be tested
+        
+        # connect 
+        username = decoded["username"];
+        friendUsername = decoded["friendUsername"];
+        firstName = decoded["firstName"];
+        lastName = decoded["lastName"];            
+        db = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="", db="ourmusic")
+        # set cursor
+        cursor = db.cursor()      
+        # insert into db       
+        sql = "INSERT INTO %s (friendUsername, firstName, lastName) VALUES ('%s','%s','%s')" % (username, friendUsername,firstName,lastName);       
+        # Execute the SQL command
+        cursor.execute(sql)          
+        # commit your changes
+        db.commit()       
+        validity = '{"validity":true}'       
+        return validity 
+    
+    
     

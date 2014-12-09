@@ -6,10 +6,7 @@ import json
 
 #Website reference:
 #https://docs.python.org/2/library/socketserver.html
-
-class TestTCPHandler(SocketServer.StreamRequestHandler):
-    
-    
+class TestTCPHandler(SocketServer.StreamRequestHandler):    
     #server   
     def handle(self):
         #get database
@@ -17,50 +14,37 @@ class TestTCPHandler(SocketServer.StreamRequestHandler):
         #get data
         self.data = self.rfile.readline()        
         decoded = json.loads(self.data)
-        username = "" 
-        # pretty printing of json-formatted string
-        #print json.dumps(decoded, sort_keys=True, indent=4) 
-        #print "subject = ", decoded["subject"]
-        subject=decoded["subject"]
-        print subject
-        #print subject == 'NEW_USER'         
-        if subject == 'NEW_USER':
-                
-                username = decoded["username"];
-                #print 'username = '+username         
-                password = decoded["password"];
-                #print 'password = '+password               
-                email = decoded["email"];
-                #print 'email = '+ email
-                
-                validity=database.createUser(username, password, email);       
-                #print 'validity = '+validity
-        
-        elif subject == 'LOGIN':
-                
-                username = decoded["username"];
-                print 'username = '+username         
-                password = decoded["password"];
-                print 'password = '+password  
-                
+        username = ""         
+        subject=decoded["subject"]               
+        if subject == 'NEW_USER':                
+                username = decoded["username"];                        
+                password = decoded["password"];                             
+                email = decoded["email"];                
+                validity=database.createUser(username, password, email);  
+        elif subject == 'LOGIN':                
+                username = decoded["username"];                      
+                password = decoded["password"];                
                 validity=database.checkCredentials(username, password);       
-                print 'LOGIN = '+validity
-                
-        elif subject == 'INIT':
-                
-                validity=database.getSongs(username);               
-                print 'INIT = '+validity
-                
+        elif subject == 'INIT':                
+                validity=database.getSongs(username);     
+        elif subject == 'QUERY':                
+                validity=database.getTopTen(decoded);    
+        elif subject == 'ADD_SONG':                             
+                validity=database.addSong(decoded);        
+        elif subject == 'ADD_FRIEND':                              
+                validity=database.addFriend(decoded);     
         #must convert result to string
         #before writing    
         self.wfile.write(str(validity))         
 
+
 if __name__== "__main__":
     HOST, PORT = "localhost", 9999   
     
-    server = SocketServer.TCPServer((HOST, PORT), TestTCPHandler) 
+    server = SocketServer.TCPServer((HOST, PORT), TestTCPHandler)
     print 'Waiting on connection:'
     server.serve_forever()
+  
     
     
    
